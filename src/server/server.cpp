@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "../lib/SocketClient.h"
-#include "../lib/SocketServer.h"
+#include "../../lib/SocketClient.h"
+#include "../../lib/SocketServer.h"
 
 using namespace std;
 
