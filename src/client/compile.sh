@@ -1,4 +1,4 @@
 #! /bin/sh
 
-g++ client.cpp ../../lib/SocketClient.h ../../lib/SocketClient.cpp -o client -std=c++0x -pthread
+g++ client.cpp ../../lib/SocketClient.cpp -o client -lpthread
 ./client
