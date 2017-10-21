@@ -23,6 +23,10 @@ SocketClient::SocketClient(int socket){
     pthread_create(&m_thread, NULL, &staticReceiveThread, this);
 }
 
+int SocketClient::getSocket(){
+    return m_socket;
+}
+
 bool SocketClient::connect(){
     m_socket = socket(AF_INET , SOCK_STREAM , 0);
     if(m_socket == -1)

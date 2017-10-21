@@ -37,6 +37,8 @@ class SocketClient {
         SocketClient(std::string address, int port);
         SocketClient(int socket);
 
+        int getSocket();
+
         bool connect();
         void disconnect();
         bool send(std::string key, std::vector<std::string> messages);
