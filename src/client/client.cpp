@@ -3,8 +3,10 @@
 
 using namespace std;
 
-void onMessage(SocketClient *sender, std::string message){
-    cout << "message : " << message << endl;
+void onMessage(SocketClient *sender, vector<string> messages){
+    for(int i=0 ; i<messages.size() ; i++){
+        cout << "message[" << i << "] : " << messages[i] << endl;
+    }
 }
 
 void onDisconnect(){
@@ -27,10 +29,13 @@ int main(int argc , char *argv[])
     while(1){
         cout << "input: ";
         getline(cin, line);
-        if(!client.send("message", line)){
+        if(!client.send("message", {line})){
             cout << "failed to send message" << endl;
             return 0;
         }
     }
+
+    client.disconnect();
+
     return 0;
 }

@@ -5,9 +5,11 @@
 
 using namespace std;
 
-void onMessage(SocketClient *socket, std::string message){
-	cout << "client : " << message << endl;
-	socket->send("message", message);
+void onMessage(SocketClient *socket, vector<string> messages){
+	for(int i=0 ; i<messages.size() ; i++){
+		cout << "message[" << i << "] : " << messages[i] << endl;
+	}
+	socket->send("message", messages);
 }
 
 int main(int argc , char *argv[]){

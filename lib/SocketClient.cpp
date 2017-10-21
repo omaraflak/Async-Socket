@@ -58,9 +58,9 @@ bool SocketClient::send(std::string message){
     return true;
 }
 
-bool SocketClient::send(std::string key, std::string message){
+bool SocketClient::send(std::string key, std::vector<std::string> messages){
     if(send(key)){
-        return send(message);
+        return send(vectorToString(messages));
     }
     return false;
 }
@@ -96,7 +96,7 @@ int SocketClient::receive(std::string &message){
     return code;
 }
 
-void SocketClient::addMessageListener(std::string key, void (*messageListener) (SocketClient *sender, std::string message)){
+void SocketClient::addMessageListener(std::string key, void (*messageListener) (SocketClient *sender, std::vector<std::string> messages)){
     m_messageListenerMap[key] = messageListener;
 }
 
@@ -119,7 +119,7 @@ void* SocketClient::receiveThread(void*){
         }
         else if(code1!=-1 && code2!=-1){
             if(m_messageListenerMap[key]!=NULL){
-                (*m_messageListenerMap[key])(this, message);
+                (*m_messageListenerMap[key])(this, stringToVector(message));
             }
         }
     }
