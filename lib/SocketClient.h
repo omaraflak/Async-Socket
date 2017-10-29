@@ -22,8 +22,8 @@ class SocketClient {
         int m_packetSize;
 
         pthread_t m_thread;
-        std::map<std::string, void (*)(SocketClient *sender, std::vector<std::string> messages)> m_messageListenerMap;
-        void (*m_disconnectListener) (void);
+        std::map<std::string, void (*)(SocketClient*, std::vector<std::string>)> m_messageListenerMap;
+        void (*m_disconnectListener) (SocketClient*);
 
         void* receiveThread(void*);
         static void* staticReceiveThread(void* p){
@@ -34,6 +34,7 @@ class SocketClient {
         bool send(std::string message);
 
     public:
+        SocketClient();
         SocketClient(std::string address, int port);
         SocketClient(int socket);
 
@@ -42,8 +43,8 @@ class SocketClient {
         bool connect();
         void disconnect();
         bool send(std::string key, std::vector<std::string> messages);
-        void addMessageListener(std::string key, void (*messageListener) (SocketClient *sender, std::vector<std::string> messages));
-        void setDisconnectListener(void (*disconnectListener) (void));
+        void addListener(std::string key, void (*messageListener) (SocketClient*, std::vector<std::string>));
+        void setDisconnectListener(void (*disconnectListener) (SocketClient*));
 };
 
 #endif

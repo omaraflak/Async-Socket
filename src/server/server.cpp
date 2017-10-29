@@ -12,6 +12,10 @@ void onMessage(SocketClient *socket, vector<string> messages){
 	socket->send("message", messages);
 }
 
+void onDisconnect(SocketClient *socket){
+	cout << "client disconnected!" << endl;
+}
+
 int main(int argc , char *argv[]){
 	SocketServer server(8888);
 	if(server.start()){
@@ -20,11 +24,15 @@ int main(int argc , char *argv[]){
 		if(sock!=-1){
 			cout << "client connected !" << endl << endl;
 			SocketClient client(sock);
-			client.addMessageListener("message", onMessage);
+			client.addListener("message", onMessage);
+			client.setDisconnectListener(onDisconnect);
 		}
 		while (1) {
 			/* loop code */
 		}
+	}
+	else{
+		cout << "Could not create server" << endl;
 	}
 	return 0;
 }

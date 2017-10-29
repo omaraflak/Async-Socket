@@ -1,5 +1,7 @@
 #include "SocketClient.h"
 
+SocketClient::SocketClient(){}
+
 SocketClient::SocketClient(std::string address, int port){
     m_address = address;
     m_port = port;
@@ -100,11 +102,11 @@ int SocketClient::receive(std::string &message){
     return code;
 }
 
-void SocketClient::addMessageListener(std::string key, void (*messageListener) (SocketClient *sender, std::vector<std::string> messages)){
+void SocketClient::addListener(std::string key, void (*messageListener) (SocketClient*, std::vector<std::string>)){
     m_messageListenerMap[key] = messageListener;
 }
 
-void SocketClient::setDisconnectListener(void (*disconnectListener) (void)){
+void SocketClient::setDisconnectListener(void (*disconnectListener) (SocketClient*)){
     m_disconnectListener = disconnectListener;
 }
 
@@ -118,7 +120,8 @@ void* SocketClient::receiveThread(void*){
         if(code1==0 || code2==0){
             m_connected = false;
             if(m_disconnectListener!=NULL){
-                (*m_disconnectListener)();
+                disconnect();
+                (*m_disconnectListener)(this);
             }
         }
         else if(code1!=-1 && code2!=-1){

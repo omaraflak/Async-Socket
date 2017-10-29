@@ -9,14 +9,14 @@ void onMessage(SocketClient *sender, vector<string> messages){
     }
 }
 
-void onDisconnect(){
+void onDisconnect(SocketClient *socket){
     cout << "you have been disconnected" << endl;
 }
 
 int main(int argc , char *argv[])
 {
     SocketClient client("127.0.0.1", 8888);
-    client.addMessageListener("message", onMessage);
+    client.addListener("message", onMessage);
     client.setDisconnectListener(onDisconnect);
 
     if(!client.connect()){
