@@ -99,7 +99,6 @@ int SocketClient::receive(std::string &message){
                 message += std::string(server_reply_rest, length%m_packetSize);
             }
         }
-        return code;
     }
     return code;
 }
@@ -120,17 +119,15 @@ void* SocketClient::getTag(){
     return m_tag;
 }
 
-void* SocketClient::receiveThread(void*){
-    std::string key;
-    std::string message;
+void SocketClient::receiveThread(){
+    std::string key, message;
     int code1, code2;
     while (!m_threadStopped) {
         code1 = receive(key);
         code2 = receive(message);
         if(code1==0 || code2==0){
-            m_connected = false;
+            disconnect();
             if(m_disconnectListener!=NULL){
-                disconnect();
                 (*m_disconnectListener)(this);
             }
         }

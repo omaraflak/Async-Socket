@@ -27,10 +27,10 @@ class SocketClient {
         std::map<std::string, void (*)(SocketClient*, std::vector<std::string>)> m_messageListenerMap;
         void (*m_disconnectListener) (SocketClient*);
 
-        void* receiveThread(void*);
+        void receiveThread();
         static void* staticReceiveThread(void* p){
             SocketClient *client = (SocketClient*) p;
-            client->receiveThread(NULL);
+            client->receiveThread();
         }
         int receive(std::string &message);
         bool send(std::string message);
