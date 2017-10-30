@@ -12,6 +12,8 @@
 
 class SocketClient {
     private:
+        void *m_tag;
+
         struct sockaddr_in m_server;
         std::string m_address;
         int m_port;
@@ -39,12 +41,14 @@ class SocketClient {
         SocketClient(int socket);
 
         int getSocket();
+        void* getTag();
 
         bool connect();
         void disconnect();
         bool send(std::string key, std::vector<std::string> messages);
         void addListener(std::string key, void (*messageListener) (SocketClient*, std::vector<std::string>));
         void setDisconnectListener(void (*disconnectListener) (SocketClient*));
+        void setTag(void *tag);
 };
 
 #endif

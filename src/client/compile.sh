@@ -1,4 +1,4 @@
 #! /bin/sh
 
-g++ client.cpp ../../lib/Base64.cpp ../../lib/SocketClient.cpp -o client -lpthread -std=c++11
+g++ client.cpp -o client -I ../../lib/ ../../lib/*.cpp -lpthread -std=c++11
 ./client

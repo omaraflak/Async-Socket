@@ -10,6 +10,7 @@ SocketClient::SocketClient(std::string address, int port){
     m_server.sin_family = AF_INET;
     m_server.sin_port = htons(port);
 
+    m_tag = NULL;
     m_disconnectListener = NULL;
     m_connected = false;
     m_threadStopped = false;
@@ -18,6 +19,7 @@ SocketClient::SocketClient(std::string address, int port){
 
 SocketClient::SocketClient(int socket){
     m_socket = socket;
+    m_tag = NULL;
     m_disconnectListener = NULL;
     m_connected = true;
     m_threadStopped = false;
@@ -108,6 +110,14 @@ void SocketClient::addListener(std::string key, void (*messageListener) (SocketC
 
 void SocketClient::setDisconnectListener(void (*disconnectListener) (SocketClient*)){
     m_disconnectListener = disconnectListener;
+}
+
+void SocketClient::setTag(void *tag){
+    m_tag = tag;
+}
+
+void* SocketClient::getTag(){
+    return m_tag;
 }
 
 void* SocketClient::receiveThread(void*){
