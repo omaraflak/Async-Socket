@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 
-#include "tools.h"
+#include "utils.h"
 #include "../../lib/socketClient.h"
 #include "../../lib/socketServer.h"
 
@@ -27,7 +27,7 @@ void onDisconnect(SocketClient *socket){
 	cout << "client disconnected !" << endl;
 	forward("message", {"Client disconnected"}, socket);
 	std::string *_uid = (std::string*) socket->getTag();
-	for(int i=0 ; i<clientsVector.size() ; i++){
+	for(unsigned int i=0 ; i<clientsVector.size() ; i++){
 		std::string *uid = (std::string*) clientsVector[i]->getTag();
 		if((*uid)==(*_uid)){
 			clientsVector.erase(clientsVector.begin() + i);
@@ -42,9 +42,7 @@ void freeMemory(){
 	}
 }
 
-int main(int argc , char *argv[]){
-	srand(time(NULL));
-
+int main(){
 	DataInterface interface([](void* data){
 		delete (std::string*) data;
 	});

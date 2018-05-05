@@ -30,9 +30,10 @@ class SocketClient {
         void (*mDisconnectListener) (SocketClient*);
 
         void receiveThread();
-        static void staticReceiveThread(void* p){
+        static void* staticReceiveThread(void* p){
             SocketClient *client = (SocketClient*) p;
             client->receiveThread();
+            return NULL;
         }
         int receive(std::string &message);
         bool send(std::string message);

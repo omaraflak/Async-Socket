@@ -98,7 +98,7 @@ std::string base64_decode(std::string const& encoded_string) {
 std::string vectorToString(std::vector<std::string> &v){
     std::stringstream ss;
     unsigned int length = v.size();
-    for(int i=0 ; i<length ; i++){
+    for(unsigned int i=0 ; i<length ; i++){
         ss << base64_encode(v[i].c_str(), v[i].size());
         if(i<length-1){
             ss << std::endl;

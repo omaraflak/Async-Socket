@@ -1,23 +1,26 @@
 CC = g++
 ODIR = obj
-CXXFLAGS = -Wall -Wextra -std=c++11
+CXXFLAGS = -Wall -Wextra -lpthread -std=c++11
 
-all : $(ODIR) $(ODIR)/client.o $(ODIR)/server.o $(ODIR)/Base64.o $(ODIR)/SocketClient.o $(ODIR)/SocketServer.o
+all : $(ODIR) $(ODIR)/client.o $(ODIR)/server.o $(ODIR)/utils.o $(ODIR)/base64.o $(ODIR)/socketClient.o $(ODIR)/socketServer.o
 
-$(ODIR)/client.o : ./example/client/client.cpp ./lib/socketClient.h ./lib/base64.h
+$(ODIR)/client.o : ./example/client/client.cpp ./lib/socketClient.h ./lib/base64.h ./lib/dataInterface.h
 	$(CC) -c ./example/client/client.cpp -o $@ $(CXXFLAGS)
 
-$(ODIR)/server.o : ./example/server/server.cpp ./example/server/Tools.h ./lib/socketClient.h ./lib/base64.h ./lib/socketServer.h
+$(ODIR)/server.o : ./example/server/server.cpp ./example/server/utils.h ./lib/socketClient.h ./lib/base64.h ./lib/dataInterface.h ./lib/socketServer.h
 	$(CC) -c ./example/server/server.cpp -o $@ $(CXXFLAGS)
 
-$(ODIR)/Base64.o : ./lib/Base64.cpp ./lib/base64.h
-	$(CC) -c ./lib/Base64.cpp -o $@ $(CXXFLAGS)
+$(ODIR)/utils.o : ./example/server/utils.cpp ./example/server/utils.h
+	$(CC) -c ./example/server/utils.cpp -o $@ $(CXXFLAGS)
 
-$(ODIR)/SocketClient.o : ./lib/SocketClient.cpp ./lib/socketClient.h ./lib/base64.h
-	$(CC) -c ./lib/SocketClient.cpp -o $@ $(CXXFLAGS)
+$(ODIR)/base64.o : ./lib/base64.cpp ./lib/base64.h
+	$(CC) -c ./lib/base64.cpp -o $@ $(CXXFLAGS)
 
-$(ODIR)/SocketServer.o : ./lib/SocketServer.cpp ./lib/socketServer.h
-	$(CC) -c ./lib/SocketServer.cpp -o $@ $(CXXFLAGS)
+$(ODIR)/socketClient.o : ./lib/socketClient.cpp ./lib/socketClient.h ./lib/base64.h ./lib/dataInterface.h
+	$(CC) -c ./lib/socketClient.cpp -o $@ $(CXXFLAGS)
+
+$(ODIR)/socketServer.o : ./lib/socketServer.cpp ./lib/socketServer.h
+	$(CC) -c ./lib/socketServer.cpp -o $@ $(CXXFLAGS)
 
 $(ODIR) :
 	if [ ! -d $(ODIR) ]; then mkdir $(ODIR); fi
