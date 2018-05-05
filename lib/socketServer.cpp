@@ -1,4 +1,4 @@
-#include "SocketServer.h"
+#include "socketServer.h"
 
 SocketServer::SocketServer(int port){
     m_port = port;

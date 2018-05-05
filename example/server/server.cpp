@@ -1,9 +1,9 @@
 #include <iostream>
 #include <vector>
 
-#include "Tools.h"
-#include "../../lib/SocketClient.h"
-#include "../../lib/SocketServer.h"
+#include "tools.h"
+#include "../../lib/socketClient.h"
+#include "../../lib/socketServer.h"
 
 using namespace std;
 
@@ -31,6 +31,7 @@ void onDisconnect(SocketClient *socket){
 		std::string *uid = (std::string*) clientsVector[i]->getTag();
 		if((*uid)==(*_uid)){
 			clientsVector.erase(clientsVector.begin() + i);
+			delete uid;
 		}
 	}
 	delete socket;

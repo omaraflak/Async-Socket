@@ -8,7 +8,7 @@
 #include <arpa/inet.h>
 #include <map>
 
-#include "Base64.h"
+#include "base64.h"
 
 class SocketClient {
     private:
@@ -28,7 +28,7 @@ class SocketClient {
         void (*m_disconnectListener) (SocketClient*);
 
         void receiveThread();
-        static void* staticReceiveThread(void* p){
+        static void staticReceiveThread(void* p){
             SocketClient *client = (SocketClient*) p;
             client->receiveThread();
         }

@@ -1,4 +1,4 @@
-#include "SocketClient.h"
+#include "socketClient.h"
 
 SocketClient::SocketClient(){}
 
@@ -57,7 +57,7 @@ void SocketClient::disconnect(){
 
 bool SocketClient::send(std::string message){
     uint32_t length = htonl(message.size());
-    if(::send(m_socket, &length, sizeof(length), 0) < 0){
+    if(::send(m_socket, &length, sizeof(uint32_t), 0) < 0){
         return false;
     }
     if(::send(m_socket, message.c_str(), message.size(), 0) < 0){
@@ -77,13 +77,16 @@ int SocketClient::receive(std::string &message){
     uint32_t length;
     int code;
 
-    code = ::recv(m_socket, &length, sizeof(length), 0);
+    code = ::recv(m_socket, &length, sizeof(uint32_t), 0);
     if(code!=-1 && code!=0){
         length = ntohl(length);
         char server_reply[length];
         message = "";
 
-        for(int i=0 ; i<length/m_packetSize ; i++){
+        int q = length/m_packetSize;
+        int r = length%m_packetSize;
+
+        for(int i=0 ; i<q ; i++){
             code = ::recv(m_socket, server_reply, m_packetSize, 0);
             if(code!=-1 && code!=0){
                 message += std::string(server_reply, m_packetSize);
@@ -92,11 +95,11 @@ int SocketClient::receive(std::string &message){
                 return code;
             }
         }
-        if(length%m_packetSize!=0){
-            char server_reply_rest[length%m_packetSize];
-            code = ::recv(m_socket, server_reply_rest, length%m_packetSize, 0);
+        if(r!=0){
+            char server_reply_rest[r];
+            code = ::recv(m_socket, server_reply_rest, r, 0);
             if(code!=-1 && code!=0){
-                message += std::string(server_reply_rest, length%m_packetSize);
+                message += std::string(server_reply_rest, r);
             }
         }
     }

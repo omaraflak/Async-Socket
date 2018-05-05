@@ -1,10 +1,10 @@
 #include <iostream>
-#include "../../lib/SocketClient.h"
+#include "../../lib/socketClient.h"
 
 using namespace std;
 
 void onMessage(SocketClient *sender, vector<string> messages){
-    for(int i=0 ; i<messages.size() ; i++){
+    for(unsigned int i=0 ; i<messages.size() ; i++){
         cout << "message[" << i << "] : " << messages[i] << endl;
     }
 }
@@ -13,8 +13,7 @@ void onDisconnect(SocketClient *socket){
     cout << "you have been disconnected" << endl;
 }
 
-int main(int argc , char *argv[])
-{
+int main(){
     SocketClient client("127.0.0.1", 8888);
     client.addListener("message", onMessage);
     client.setDisconnectListener(onDisconnect);
