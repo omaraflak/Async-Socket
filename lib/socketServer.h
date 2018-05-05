@@ -6,9 +6,9 @@
 
 class SocketServer {
     private:
-        int m_port;
-        int m_socket;
-        struct sockaddr_in m_server;
+        int mPort;
+        int mSocket;
+        struct sockaddr_in mServer;
 
     public:
         SocketServer(int port);

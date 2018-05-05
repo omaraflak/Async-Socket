@@ -3,64 +3,70 @@
 SocketClient::SocketClient(){}
 
 SocketClient::SocketClient(std::string address, int port){
-    m_address = address;
-    m_port = port;
+    mAddress = address;
+    mPort = port;
 
-    m_server.sin_addr.s_addr = inet_addr(address.c_str());
-    m_server.sin_family = AF_INET;
-    m_server.sin_port = htons(port);
+    mServer.sin_addr.s_addr = inet_addr(address.c_str());
+    mServer.sin_family = AF_INET;
+    mServer.sin_port = htons(port);
 
-    m_tag = NULL;
-    m_disconnectListener = NULL;
-    m_connected = false;
-    m_threadStopped = false;
-    m_packetSize = 4096;
+    mTag = NULL;
+    mDisconnectListener = NULL;
+    mConnected = false;
+    mThreadStopped = false;
+    mPacketSize = 4096;
 }
 
 SocketClient::SocketClient(int socket){
-    m_socket = socket;
-    m_tag = NULL;
-    m_disconnectListener = NULL;
-    m_connected = true;
-    m_threadStopped = false;
-    m_packetSize = 4096;
-    pthread_create(&m_thread, NULL, &staticReceiveThread, this);
+    mSocket = socket;
+    mTag = NULL;
+    mDisconnectListener = NULL;
+    mConnected = true;
+    mThreadStopped = false;
+    mPacketSize = 4096;
+    pthread_create(&mThread, NULL, &staticReceiveThread, this);
+}
+
+SocketClient::~SocketClient(){
+    if(mTag!=NULL && mDataInterface.mDestroy){
+        mDataInterface.mDestroy(mTag);
+    }
 }
 
 int SocketClient::getSocket(){
-    return m_socket;
+    return mSocket;
 }
 
 bool SocketClient::connect(){
-    m_socket = socket(AF_INET , SOCK_STREAM , 0);
-    if(m_socket == -1)
+    mSocket = socket(AF_INET , SOCK_STREAM , 0);
+    if(mSocket == -1)
     {
         return false;
     }
 
-    if(::connect(m_socket, (struct sockaddr *)&m_server, sizeof(m_server)) < 0)
+    if(::connect(mSocket, (struct sockaddr *)&mServer, sizeof(mServer)) < 0)
     {
         return false;
     }
 
-    m_connected = true;
-    pthread_create(&m_thread, NULL, &staticReceiveThread, this);
+    mConnected = true;
+    pthread_create(&mThread, NULL, &staticReceiveThread, this);
 
     return true;
 }
 
 void SocketClient::disconnect(){
-    close(m_socket);
-    m_connected = false;
-    m_threadStopped = true;
+    close(mSocket);
+    mConnected = false;
+    mThreadStopped = true;
 }
 
 bool SocketClient::send(std::string message){
     uint32_t length = htonl(message.size());
-    if(::send(m_socket, &length, sizeof(uint32_t), 0) < 0){
+    if(::send(mSocket, &length, sizeof(uint32_t), 0) < 0){
         return false;
     }
-    if(::send(m_socket, message.c_str(), message.size(), 0) < 0){
+    if(::send(mSocket, message.c_str(), message.size(), 0) < 0){
         return false;
     }
     return true;
@@ -77,19 +83,19 @@ int SocketClient::receive(std::string &message){
     uint32_t length;
     int code;
 
-    code = ::recv(m_socket, &length, sizeof(uint32_t), 0);
+    code = ::recv(mSocket, &length, sizeof(uint32_t), 0);
     if(code!=-1 && code!=0){
         length = ntohl(length);
         char server_reply[length];
         message = "";
 
-        int q = length/m_packetSize;
-        int r = length%m_packetSize;
+        int q = length/mPacketSize;
+        int r = length%mPacketSize;
 
         for(int i=0 ; i<q ; i++){
-            code = ::recv(m_socket, server_reply, m_packetSize, 0);
+            code = ::recv(mSocket, server_reply, mPacketSize, 0);
             if(code!=-1 && code!=0){
-                message += std::string(server_reply, m_packetSize);
+                message += std::string(server_reply, mPacketSize);
             }
             else{
                 return code;
@@ -97,7 +103,7 @@ int SocketClient::receive(std::string &message){
         }
         if(r!=0){
             char server_reply_rest[r];
-            code = ::recv(m_socket, server_reply_rest, r, 0);
+            code = ::recv(mSocket, server_reply_rest, r, 0);
             if(code!=-1 && code!=0){
                 message += std::string(server_reply_rest, r);
             }
@@ -107,36 +113,37 @@ int SocketClient::receive(std::string &message){
 }
 
 void SocketClient::addListener(std::string key, void (*messageListener) (SocketClient*, std::vector<std::string>)){
-    m_messageListenerMap[key] = messageListener;
+    mMessageListenerMap[key] = messageListener;
 }
 
 void SocketClient::setDisconnectListener(void (*disconnectListener) (SocketClient*)){
-    m_disconnectListener = disconnectListener;
+    mDisconnectListener = disconnectListener;
 }
 
-void SocketClient::setTag(void *tag){
-    m_tag = tag;
+void SocketClient::setTag(void *tag, DataInterface interface){
+    mTag = tag;
+    mDataInterface = interface;
 }
 
 void* SocketClient::getTag(){
-    return m_tag;
+    return mTag;
 }
 
 void SocketClient::receiveThread(){
     std::string key, message;
     int code1, code2;
-    while (!m_threadStopped) {
+    while (!mThreadStopped) {
         code1 = receive(key);
         code2 = receive(message);
         if(code1==0 || code2==0){
             disconnect();
-            if(m_disconnectListener!=NULL){
-                (*m_disconnectListener)(this);
+            if(mDisconnectListener!=NULL){
+                (*mDisconnectListener)(this);
             }
         }
         else if(code1!=-1 && code2!=-1){
-            if(m_messageListenerMap[key]!=NULL){
-                (*m_messageListenerMap[key])(this, stringToVector(message));
+            if(mMessageListenerMap[key]!=NULL){
+                (*mMessageListenerMap[key])(this, stringToVector(message));
             }
         }
     }

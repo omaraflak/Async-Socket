@@ -31,7 +31,6 @@ void onDisconnect(SocketClient *socket){
 		std::string *uid = (std::string*) clientsVector[i]->getTag();
 		if((*uid)==(*_uid)){
 			clientsVector.erase(clientsVector.begin() + i);
-			delete uid;
 		}
 	}
 	delete socket;
@@ -39,13 +38,16 @@ void onDisconnect(SocketClient *socket){
 
 void freeMemory(){
 	for(auto x : clientsVector){
-		delete (std::string*) x->getTag();
 		delete x;
 	}
 }
 
 int main(int argc , char *argv[]){
 	srand(time(NULL));
+
+	DataInterface interface([](void* data){
+		delete (std::string*) data;
+	});
 
 	SocketServer server(8888);
 	if(server.start()){
@@ -57,7 +59,7 @@ int main(int argc , char *argv[]){
 				SocketClient *client = new SocketClient(sock);
 				client->addListener("message", onMessage);
 				client->setDisconnectListener(onDisconnect);
-				client->setTag(new std::string(getUid()));
+				client->setTag(new std::string(getUid()), interface);
 				clientsVector.push_back(client);
 			}
 		}

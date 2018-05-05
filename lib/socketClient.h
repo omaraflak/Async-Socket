@@ -9,23 +9,25 @@
 #include <map>
 
 #include "base64.h"
+#include "dataInterface.h"
 
 class SocketClient {
     private:
-        void *m_tag;
+        void *mTag;
+        DataInterface mDataInterface;
 
-        struct sockaddr_in m_server;
-        std::string m_address;
-        int m_port;
-        int m_socket;
-        bool m_connected;
-        bool m_threadStopped;
+        struct sockaddr_in mServer;
+        std::string mAddress;
+        int mPort;
+        int mSocket;
+        bool mConnected;
+        bool mThreadStopped;
 
-        int m_packetSize;
+        int mPacketSize;
 
-        pthread_t m_thread;
-        std::map<std::string, void (*)(SocketClient*, std::vector<std::string>)> m_messageListenerMap;
-        void (*m_disconnectListener) (SocketClient*);
+        pthread_t mThread;
+        std::map<std::string, void (*)(SocketClient*, std::vector<std::string>)> mMessageListenerMap;
+        void (*mDisconnectListener) (SocketClient*);
 
         void receiveThread();
         static void staticReceiveThread(void* p){
@@ -39,6 +41,7 @@ class SocketClient {
         SocketClient();
         SocketClient(std::string address, int port);
         SocketClient(int socket);
+        ~SocketClient();
 
         int getSocket();
         void* getTag();
@@ -48,7 +51,7 @@ class SocketClient {
         bool send(std::string key, std::vector<std::string> messages);
         void addListener(std::string key, void (*messageListener) (SocketClient*, std::vector<std::string>));
         void setDisconnectListener(void (*disconnectListener) (SocketClient*));
-        void setTag(void *tag);
+        void setTag(void *tag, DataInterface interface);
 };
 
 #endif
