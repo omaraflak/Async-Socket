@@ -1,8 +1,13 @@
 CC = g++
 ODIR = obj
 CXXFLAGS = -Wall -Wextra -lpthread -std=c++11
+CLIENT = client
+SERVER = server
 
-all : $(ODIR) $(ODIR)/client.o $(ODIR)/server.o $(ODIR)/utils.o $(ODIR)/base64.o $(ODIR)/socketClient.o $(ODIR)/socketServer.o
+OBJS = $(ODIR)/utils.o $(ODIR)/base64.o $(ODIR)/socketClient.o $(ODIR)/socketServer.o
+all : $(ODIR) $(OBJS) $(ODIR)/client.o $(ODIR)/server.o
+	$(CC) -o $(SERVER) $(OBJS) $(ODIR)/server.o $(CXXFLAGS)
+	$(CC) -o $(CLIENT) $(OBJS) $(ODIR)/client.o $(CXXFLAGS)
 
 $(ODIR)/client.o : ./example/client/client.cpp ./lib/socketClient.h ./lib/base64.h ./lib/dataInterface.h
 	$(CC) -c ./example/client/client.cpp -o $@ $(CXXFLAGS)
@@ -28,3 +33,5 @@ $(ODIR) :
 .PHONY : clean
 clean :
 	if [ -d $(ODIR) ]; then rm $(ODIR) -r; fi
+	if [ -f $(CLIENT) ]; then rm $(CLIENT); fi
+	if [ -f $(SERVER) ]; then rm $(SERVER); fi
