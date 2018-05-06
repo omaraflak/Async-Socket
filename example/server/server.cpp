@@ -5,11 +5,9 @@
 #include "../../lib/socketClient.h"
 #include "../../lib/socketServer.h"
 
-using namespace std;
-
 std::vector<SocketClient*> clientsVector;
 
-void forward(string key, vector<string> messages, SocketClient *exception){
+void forward(std::string key, std::vector<std::string> messages, SocketClient *exception){
 	std::string *_uid = (std::string*) exception->getTag();
 	for(auto x : clientsVector){
 		std::string *uid = (std::string*) x->getTag();
@@ -19,12 +17,12 @@ void forward(string key, vector<string> messages, SocketClient *exception){
 	}
 }
 
-void onMessage(SocketClient *socket, vector<string> messages){
+void onMessage(SocketClient *socket, std::vector<std::string> messages){
 	forward("message", messages, socket);
 }
 
 void onDisconnect(SocketClient *socket){
-	cout << "client disconnected !" << endl;
+	std::cout << "client disconnected !" << std::endl;
 	forward("message", {"Client disconnected"}, socket);
 	std::string *_uid = (std::string*) socket->getTag();
 	for(unsigned int i=0 ; i<clientsVector.size() ; i++){
@@ -49,21 +47,23 @@ int main(){
 
 	SocketServer server(8888);
 	if(server.start()){
-		cout << "server started. Listening on port 8888..." << endl;
+		std::cout << "server started. Listening on port 8888..." << std::endl;
 		while (1) {
 			int sock = server.accept();
 			if(sock!=-1){
-				cout << "client connected !" << endl;
+				std::cout << "client connected !" << std::endl;
+				std::string uid = getUid();
 				SocketClient *client = new SocketClient(sock);
 				client->addListener("message", onMessage);
 				client->setDisconnectListener(onDisconnect);
-				client->setTag(new std::string(getUid()), interface);
+				client->setTag(new std::string(uid), interface);
+				client->send("uid", uid);
 				clientsVector.push_back(client);
 			}
 		}
 	}
 	else{
-		cout << "Could not create server" << endl;
+		std::cout << "Could not create server" << std::endl;
 	}
 
 	freeMemory();

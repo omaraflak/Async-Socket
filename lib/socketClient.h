@@ -50,6 +50,7 @@ class SocketClient {
         bool connect();
         void disconnect();
         bool send(std::string key, std::vector<std::string> messages);
+        bool send(std::string key, std::string message);
         void addListener(std::string key, void (*messageListener) (SocketClient*, std::vector<std::string>));
         void setDisconnectListener(void (*disconnectListener) (SocketClient*));
         void setTag(void *tag, DataInterface interface);

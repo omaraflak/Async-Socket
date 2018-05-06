@@ -79,6 +79,10 @@ bool SocketClient::send(std::string key, std::vector<std::string> messages){
     return false;
 }
 
+bool SocketClient::send(std::string key, std::string message){
+    return send(key, {message});
+}
+
 int SocketClient::receive(std::string &message){
     uint32_t length;
     int code;
