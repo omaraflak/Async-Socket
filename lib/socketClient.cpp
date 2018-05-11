@@ -80,7 +80,8 @@ bool SocketClient::send(std::string key, std::vector<std::string> messages){
 }
 
 bool SocketClient::send(std::string key, std::string message){
-    return send(key, {message});
+    std::vector<std::string> msg = {message};
+    return send(key, msg);
 }
 
 int SocketClient::receive(std::string &message){
